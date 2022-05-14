@@ -1,11 +1,13 @@
-# <img alt="quote" src="https://i.imgur.com/iqDW7gp.png" width="280px" />
+# <img alt="Quote" src="https://i.imgur.com/iqDW7gp.png" width="280px" />
 
 ![eyecatch](https://i.imgur.com/dlglta1.png)
 
 > Quote allows you to quote messages in a better way
 
 
-### **[🎫 Invite to your server](https://discordapp.com/oauth2/authorize?client_id=678185722473349120&scope=bot&permissions=536964096)**
+### **[See the source repository](https://github.com/nakayoshi/quote)**
+
+<br />
 
 ## Usage
 
@@ -17,9 +19,17 @@ Quote a message that contains `text` from the same channel and replace your mess
 
 Quote a message by the URL and replace your message with an embed.
 
-### `/help`
+### `$help`
 
-Shows this help
+Shows the help menu
+
+<br />
+
+## How it works
+
+Quote uses Discord's Webhook API to send messages with a customised username and an avatar. It deletes the original message and uses this technique to pretend the message as if it was sent by another user.
+
+<br />
 
 ## Required Permissions
 - Manage Webhooks
@@ -29,9 +39,7 @@ Shows this help
 - Embed Links
 - Read Message History
 
-## How it works
-
-Quote uses Discord's Webhook API to send messages with a customised username and an avatar. We delete the original message and use this technique to pretend the message as if it was sent by another user.
+<br />
 
 ## FAQ
 
@@ -42,19 +50,17 @@ Due to Discord's API limitation, the number of messages you can go back is restr
 ### Quote doesn't work on my server! What's wrong?
 There's several possible scenarios. Check the following cases:
 
-#### Permisson is not enough
-See *Required Permissions* section above and give enough permissions for running Quote.
+- #### Permissons issue
+    - See *Required Permissions* section above and give enough permissions for running Quote.
 
-#### 2FA (Two-factor Authentication) is required on your server
-Since Quote using some admin-level features such as "Manage Messages", you need to disable 2FA otherwise it will not work properly.
+- #### 2FA (Two-factor Authentication) is required on your server
+    - Since Quote using some admin-level features such as "Manage Messages", you need to disable 2FA otherwise it will not work properly.
 
 ### Why my message has a badge _BOT_?
 
 Since Quote uses Discord's Webhook API to replace your message, the embed was actually sent by the bot though it is pretended as if you sent it.
 
-### This is an awesome idea! Why doesn't the Discord team implement it officially?
-
-I don't know ¯\\\_(ツ)\_/¯ Tell them to hire me.
+<br />
 
 ## Deployment
 ### Requirements

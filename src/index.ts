@@ -31,7 +31,7 @@ ready$.pipe(first()).subscribe(async () => {
 
   await client.user.setActivity({
     type: 'LISTENING',
-    name: '/help',
+    name: '$help',
   });
 });
 
@@ -42,7 +42,7 @@ ready$.pipe(first()).subscribe(async () => {
  */
 message$
   .pipe(
-    filter((message) => message.content.startsWith('/help')),
+    filter((message) => message.content.startsWith('$help')),
     filter(not(isBot)),
   )
   .subscribe(async (message) => {
@@ -55,11 +55,11 @@ message$
       > \`<URL>\`
       Quote a message by the \`<URL>\` and replace your message with an embed.
 
-      > \`/help\`
+      > \`$help\`
       Shows usage of Quote.
 
       See also GitHub for more information:
-      https://github.com/nakayoshi/quote
+      https://github.com/ElioDiNino/Quote
     `);
   });
 
