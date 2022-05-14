@@ -7,8 +7,6 @@
 
 ### **[See the source repository](https://github.com/nakayoshi/quote)**
 
-<br />
-
 ## Usage
 
 ### `> <text>`
@@ -23,13 +21,9 @@ Quote a message by the URL and replace your message with an embed.
 
 Shows the help menu
 
-<br />
-
 ## How it works
 
 Quote uses Discord's Webhook API to send messages with a customised username and an avatar. It deletes the original message and uses this technique to pretend the message as if it was sent by another user.
-
-<br />
 
 ## Required Permissions
 - Manage Webhooks
@@ -38,8 +32,6 @@ Quote uses Discord's Webhook API to send messages with a customised username and
 - Manage Messages
 - Embed Links
 - Read Message History
-
-<br />
 
 ## FAQ
 
@@ -59,8 +51,6 @@ There's several possible scenarios. Check the following cases:
 ### Why my message has a badge _BOT_?
 
 Since Quote uses Discord's Webhook API to replace your message, the embed was actually sent by the bot though it is pretended as if you sent it.
-
-<br />
 
 ## Deployment
 ### Requirements
