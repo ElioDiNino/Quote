@@ -12,11 +12,12 @@
     "test": "jest"
   },
   "dependencies": {
+    "@types/babel__core": "^7.1.19",
     "@types/node": "^14.0.13",
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
     "outdent": "^0.7.1",
-    "rxjs": "^6.5.5",
+    "rxjs": "^6.6.7",
     "typescript": "^3.9.5"
   },
   "devDependencies": {
