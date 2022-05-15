@@ -55,7 +55,7 @@ Since Quote uses Discord's Webhook API to replace your message, the embed was ac
 ## Deployment
 ### Requirements
  - Node.js >= 12
- - Yarn
+ - npm
  - Git
 
 First of all, clone this repository using git.
@@ -86,16 +86,16 @@ touch persistence.json
 echo "{}" > persistence.json
 ```
 
-Then, install Node.js dependencies with Yarn
+Then, install Node.js dependencies with npm
 
 ```
-yarn
+npm install
 ```
 
 Then build the programme written in TypeScript into runnable JavaScript
 
 ```
-yarn run build
+npm run build
 ```
 
 Finally, you can start the bot by the following command:
