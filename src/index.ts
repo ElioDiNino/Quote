@@ -58,8 +58,8 @@ message$
       > \`$help\`
       Shows usage of Quote.
 
-      See also GitHub for more information:
-      https://github.com/ElioDiNino/Quote
+      See GitHub for more information:
+      <https://github.com/ElioDiNino/Quote>
     `);
   });
 
