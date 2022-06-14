@@ -61,7 +61,7 @@ Since Quote uses Discord's Webhook API to replace your message, the embed was ac
 First of all, clone this repository using git.
 
 ```
-git clone https://github.com/nakayoshi/quote.git
+git clone https://github.com/ElioDiNino/Quote.git
 ```
 
 Copy the example of configuration file then edit it
