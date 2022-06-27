@@ -20,7 +20,6 @@ export const fetchMessageByText = async (
 
   return channel.messages
     .fetch({ limit: 100 })
-    .then((collection) => collection.array())
     .then((messages) =>
       messages.find((message) => {
         return !excludes.includes(message.id) && message.content.includes(text);
@@ -29,11 +28,11 @@ export const fetchMessageByText = async (
 };
 
 export const getNickname = (message: Discord.Message) => {
-  const member = message?.guild?.member(message.author);
-  return member ? member.displayName : message.author.tag;
+  const member = message?.member?.displayName;
+  return member ? member : message.author.tag;
 };
 
-export const toEmbed = (message: Discord.Message) => {
+export const toEmbed = (message: Discord.Message, quoteName: string, avatarURL: string) => {
   const nickname = getNickname(message);
   const title =
     message.channel instanceof Discord.TextChannel
@@ -45,13 +44,13 @@ export const toEmbed = (message: Discord.Message) => {
     .setDescription(message.content)
     .setURL(message.url)
     .setTimestamp(message.createdTimestamp)
-    .setFooter('Quote');
+    .setFooter({ text: quoteName, iconURL: avatarURL });
 
-  const avatar = message.author.avatarURL({ format: 'png', size: 64 });
+  const avatar = message.author.displayAvatarURL({ format: 'png', size: 64 });
   if (avatar) {
-    embed.setAuthor(nickname, avatar);
+    embed.setAuthor({ name: nickname, iconURL: avatar });
   } else {
-    embed.setAuthor(nickname);
+    embed.setAuthor({ name: nickname });
   }
 
   const image = message.attachments.first();
@@ -87,13 +86,22 @@ export const mimic = async (
 
   if (!(original.channel instanceof Discord.TextChannel)) return;
   const webhook = await fetchWebhook(original.channel, selfId);
-  const avatarURL = original.author.avatarURL();
+  const avatarURL = original.author.displayAvatarURL();
 
-  await webhook.send(content, {
-    avatarURL: avatarURL ?? undefined,
-    username: getNickname(original),
-    ...options,
-  });
+  if (content !== '') {
+    await webhook.send({
+      content: content,
+      avatarURL: avatarURL ?? undefined,
+      username: getNickname(original),
+      ...options,
+    });
+  } else {
+    await webhook.send({
+      avatarURL: avatarURL ?? undefined,
+      username: getNickname(original),
+      ...options,
+    });
+  }
 };
 
 export const removeEmptyLines = (text: string) =>

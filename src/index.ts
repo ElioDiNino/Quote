@@ -18,9 +18,15 @@ import { URL, MARKDOWN } from './regexps';
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-const client = new Discord.Client();
+const client = new Discord.Client({
+  intents: [
+    Discord.Intents.FLAGS.GUILDS,
+    Discord.Intents.FLAGS.GUILD_MESSAGES,
+    Discord.Intents.FLAGS.GUILD_WEBHOOKS
+  ]
+});
 const ready$ = fromEvent<void>(client, 'ready');
-const message$ = fromEvent<Discord.Message>(client, 'message');
+const message$ = fromEvent<Discord.Message>(client, 'messageCreate');
 
 ready$.pipe(first()).subscribe(async () => {
   if (client.user == null) {
@@ -81,6 +87,10 @@ message$
       .filter((match) => match != null)
       .join('\n');
 
+    if (message.channel.type !== 'GUILD_TEXT') {
+      return;
+    }
+
     const quote = await fetchMessageByText(text, message.channel, [message.id]);
 
     if (quote == null) {
@@ -92,7 +102,7 @@ message$
     );
 
     await mimic(content, message, client.user.id, {
-      embeds: [toEmbed(quote)],
+      embeds: [toEmbed(quote, client.user.username, client.user.displayAvatarURL())],
     });
   });
 
@@ -134,7 +144,7 @@ message$
       }
 
       const quote = await channel.messages.fetch(messageId);
-      embeds.push(toEmbed(quote));
+      embeds.push(toEmbed(quote, client.user.username, client.user.displayAvatarURL()));
     }
 
     if (embeds.length === 0) {
