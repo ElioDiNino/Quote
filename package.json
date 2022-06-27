@@ -1,29 +1,41 @@
 {
   "name": "quote",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "./dist/index.js",
-  "homepage": "https://github.com/nakayoshi/quote",
-  "repository": "https://github.com/nakayoshi/quote.git",
+  "homepage": "https://github.com/ElioDiNino/Quote",
+  "bugs": {
+    "url": "https://github.com/ElioDiNino/Quote/issues",
+    "email": "quote-bugs@eliodinino.com"
+  },
+  "repository": "https://github.com/ElioDiNino/Quote.git",
   "author": "Ryo Igarashi <n33t5hin@gmail.com>",
+  "contributors": [
+    {
+      "name": "Elio Di Nino",
+      "email": "contact@eliodinino.com",
+      "url": "https://eliodinino.com"
+    }
+  ],
   "license": "AGPL-3.0",
   "private": false,
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "start": "node ./dist/index.js"
   },
   "dependencies": {
     "@types/babel__core": "^7.1.19",
-    "@types/node": "^14.0.13",
-    "discord.js": "^12.2.0",
-    "dotenv": "^8.2.0",
-    "outdent": "^0.7.1",
-    "rxjs": "^6.6.7",
-    "typescript": "^3.9.5"
+    "@types/node": "^18.0.0",
+    "discord.js": "^13.8.1",
+    "dotenv": "^16.0.1",
+    "outdent": "^0.8.0",
+    "rxjs": "^7.5.5",
+    "typescript": "^4.7.4"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.0",
-    "jest": "^26.0.1",
-    "prettier": "^2.0.5",
-    "ts-jest": "^26.1.0"
+    "@types/jest": "^28.1.3",
+    "jest": "^28.1.1",
+    "prettier": "^2.7.1",
+    "ts-jest": "^28.0.5"
   }
 }
