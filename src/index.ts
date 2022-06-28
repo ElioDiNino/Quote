@@ -1,6 +1,6 @@
 import path from 'path';
 import dotenv from 'dotenv';
-import Discord from 'discord.js';
+import Discord, { Permissions } from 'discord.js';
 import { fromEvent } from 'rxjs';
 import { first, filter } from 'rxjs/operators';
 
@@ -13,6 +13,7 @@ import {
   fetchMessageByText,
   removeEmptyLines,
   helpEmbed,
+  replaceRoleMentions,
 } from './utils';
 import { URL, MARKDOWN } from './regexps';
 
@@ -90,9 +91,15 @@ message$
       return;
     }
 
-    const content = removeEmptyLines(
+    var content = removeEmptyLines(
       message.content.replace(new RegExp(MARKDOWN, 'gm'), ''),
     );
+
+    if (!(message.member?.permissions.has(Permissions.FLAGS.MENTION_EVERYONE)
+      || message.member?.permissions.has(Permissions.FLAGS.ADMINISTRATOR))) {
+      content = replaceRoleMentions(message, content);
+    }
+
     try {
       await mimic(content, message, client.user.id, {
         embeds: [await toEmbed(quote, client.user.username, client.user.displayAvatarURL())],
@@ -152,11 +159,15 @@ message$
       return;
     }
 
-    const content = removeEmptyLines(
-      message.content.replace(new RegExp(URL, 'gm'), '')
-        .replace(/(@here)/gm, '`@here`')
-        .replace(/(@everyone)/gm, '`@everyone`'),
+    var content = removeEmptyLines(
+      message.content.replace(new RegExp(URL, 'gm'), ''),
     );
+
+    if (!(message.member?.permissions.has(Permissions.FLAGS.MENTION_EVERYONE)
+      || message.member?.permissions.has(Permissions.FLAGS.ADMINISTRATOR))) {
+      content = replaceRoleMentions(message, content);
+    }
+
     try {
       await mimic(content, message, client.user.id, {
         embeds,

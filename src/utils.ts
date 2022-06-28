@@ -146,3 +146,19 @@ export const mimic = async (
 
 export const removeEmptyLines = (text: string) =>
   text.replace(/^\s*\n/gm, '').trim();
+
+export const replaceRoleMentions = (
+  message: Discord.Message,
+  text: string) => {
+  const roleRegex = /<@&(\d{17,19})>/g;
+  return text
+    .replace(/@here/g, '`@here`')
+    .replace(/@everyone/g, '`@everyone`')
+    .replace(roleRegex, (match, id) => {
+      const role = message?.guild?.roles.cache.get(id);
+      if (role?.mentionable) {
+        return `<@&${role.id}>`;
+      }
+      return role ? `\`@${role.name}\`` : `\`${match}\``;
+    }).trim();
+}
