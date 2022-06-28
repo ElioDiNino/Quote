@@ -15,7 +15,7 @@ export const fetchMessageByText = async (
   channel: Discord.Channel,
   excludes: string[] = [],
 ) => {
-  if (!(channel instanceof Discord.TextChannel)) {
+  if (!(channel instanceof Discord.TextChannel || channel instanceof Discord.ThreadChannel)) {
     return;
   }
 
@@ -43,7 +43,9 @@ export const toEmbed = async (message: Discord.Message, quoteName: string, avata
   const title =
     message.channel instanceof Discord.TextChannel
       ? message.channel.name
-      : message.channel.id;
+      : message.channel instanceof Discord.ThreadChannel
+        ? message.channel.name
+        : message.channel.id;
 
   const embed = new Discord.MessageEmbed()
     .setColor('#2f3136')
@@ -110,8 +112,16 @@ export const mimic = async (
   if (!original.deletable) return;
   await original.delete();
 
-  if (!(original.channel instanceof Discord.TextChannel)) return;
-  const webhook = await fetchWebhook(original.channel, selfId);
+  var webhook = undefined;
+  if (original.channel instanceof Discord.ThreadChannel && original.channel.parent?.type === 'GUILD_TEXT') {
+    webhook = await fetchWebhook(original.channel.parent, selfId);
+    options.threadId = original.channel.id;
+  } else if (original.channel instanceof Discord.TextChannel) {
+    webhook = await fetchWebhook(original.channel, selfId);
+  } else {
+    return;
+  }
+
   const avatarURL = original.author.displayAvatarURL();
 
   if (content !== '') {
