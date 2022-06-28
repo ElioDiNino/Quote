@@ -73,7 +73,7 @@ message$
       .filter((match) => match != null)
       .join('\n');
 
-    if (message.channel.type !== 'GUILD_TEXT') {
+    if (message.channel.type !== 'GUILD_TEXT' && message.channel.type !== 'GUILD_PUBLIC_THREAD') {
       return;
     }
 
@@ -125,7 +125,7 @@ message$
 
       const channel = await client.channels.fetch(channelId);
 
-      if (!(channel instanceof Discord.TextChannel)) {
+      if (!(channel instanceof Discord.TextChannel || channel instanceof Discord.ThreadChannel)) {
         continue;
       }
       try {
