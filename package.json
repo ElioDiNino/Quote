@@ -21,11 +21,14 @@
   "scripts": {
     "build": "tsc",
     "test": "jest",
+    "deploy": "node ./dist/deploy-commands.js",
     "start": "node ./dist/index.js"
   },
   "dependencies": {
+    "@discordjs/rest": "^0.5.0",
     "@types/babel__core": "^7.1.19",
     "@types/node": "^18.0.0",
+    "discord-api-types": "^0.35.0",
     "discord.js": "^13.8.1",
     "dotenv": "^16.0.1",
     "outdent": "^0.8.0",

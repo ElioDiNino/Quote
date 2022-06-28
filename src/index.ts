@@ -1,7 +1,6 @@
 import path from 'path';
 import dotenv from 'dotenv';
 import Discord from 'discord.js';
-import outdent from 'outdent';
 import { fromEvent } from 'rxjs';
 import { first, filter } from 'rxjs/operators';
 
@@ -13,6 +12,7 @@ import {
   not,
   fetchMessageByText,
   removeEmptyLines,
+  helpEmbed,
 } from './utils';
 import { URL, MARKDOWN } from './regexps';
 
@@ -37,7 +37,7 @@ ready$.pipe(first()).subscribe(async () => {
 
   await client.user.setActivity({
     type: 'LISTENING',
-    name: '$help',
+    name: '/help',
   });
 });
 
@@ -52,21 +52,7 @@ message$
     filter(not(isBot)),
   )
   .subscribe(async (message) => {
-    await message.channel.send(outdent`
-      **Quote** allows you to quote messages in a better way.
-
-      > \`> <text>\`
-      Quote a message that contains \`<text>\` from the same channel and replace your message with an embed.
-
-      > \`<URL>\`
-      Quote a message by the \`<URL>\` and replace your message with an embed.
-
-      > \`$help\`
-      Shows usage of Quote.
-
-      See GitHub for more information:
-      <https://github.com/ElioDiNino/Quote>
-    `);
+    await message.channel.send({ embeds: [helpEmbed()] });
   });
 
 /**
@@ -102,7 +88,7 @@ message$
     );
 
     await mimic(content, message, client.user.id, {
-      embeds: [toEmbed(quote, client.user.username, client.user.displayAvatarURL())],
+      embeds: [await toEmbed(quote, client.user.username, client.user.displayAvatarURL())],
     });
   });
 
@@ -142,9 +128,12 @@ message$
       if (!(channel instanceof Discord.TextChannel)) {
         continue;
       }
-
-      const quote = await channel.messages.fetch(messageId);
-      embeds.push(toEmbed(quote, client.user.username, client.user.displayAvatarURL()));
+      try {
+        const quote = await channel.messages.fetch(messageId);
+        embeds.push(await toEmbed(quote, client.user.username, client.user.displayAvatarURL()));
+      } catch (e) {
+        console.log("Error fetching message:", e);
+      }
     }
 
     if (embeds.length === 0) {
@@ -159,6 +148,18 @@ message$
       embeds,
     });
   });
+
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isCommand()) return;
+
+  const { commandName } = interaction;
+
+  if (commandName === 'help') {
+    await interaction.reply({
+      embeds: [helpEmbed()], ephemeral: true
+    })
+  }
+});
 
 (async () => {
   await client.login(process.env.DISCORD_TOKEN);
