@@ -52,7 +52,12 @@ message$
     filter(not(isBot)),
   )
   .subscribe(async (message) => {
-    await message.channel.send({ embeds: [helpEmbed()] });
+    try {
+      await message.channel.send({ embeds: [helpEmbed()] });
+    } catch (error) {
+      console.log("Error sending help command:", error);
+    }
+
   });
 
 /**
@@ -73,7 +78,9 @@ message$
       .filter((match) => match != null)
       .join('\n');
 
-    if (message.channel.type !== 'GUILD_TEXT' && message.channel.type !== 'GUILD_PUBLIC_THREAD') {
+    if (message.channel.type !== 'GUILD_TEXT'
+      && message.channel.type !== 'GUILD_PUBLIC_THREAD'
+      && message.channel.type !== 'GUILD_NEWS') {
       return;
     }
 
@@ -86,10 +93,13 @@ message$
     const content = removeEmptyLines(
       message.content.replace(new RegExp(MARKDOWN, 'gm'), ''),
     );
-
-    await mimic(content, message, client.user.id, {
-      embeds: [await toEmbed(quote, client.user.username, client.user.displayAvatarURL())],
-    });
+    try {
+      await mimic(content, message, client.user.id, {
+        embeds: [await toEmbed(quote, client.user.username, client.user.displayAvatarURL())],
+      });
+    } catch (error) {
+      console.log("Error sending quote:", error);
+    }
   });
 
 /**
@@ -125,7 +135,9 @@ message$
 
       const channel = await client.channels.fetch(channelId);
 
-      if (!(channel instanceof Discord.TextChannel || channel instanceof Discord.ThreadChannel)) {
+      if (!(channel instanceof Discord.TextChannel
+        || channel instanceof Discord.ThreadChannel
+        || channel instanceof Discord.NewsChannel)) {
         continue;
       }
       try {
@@ -141,12 +153,17 @@ message$
     }
 
     const content = removeEmptyLines(
-      message.content.replace(new RegExp(URL, 'gm'), ''),
+      message.content.replace(new RegExp(URL, 'gm'), '')
+        .replace(/(@here)/gm, '`@here`')
+        .replace(/(@everyone)/gm, '`@everyone`'),
     );
-
-    await mimic(content, message, client.user.id, {
-      embeds,
-    });
+    try {
+      await mimic(content, message, client.user.id, {
+        embeds,
+      });
+    } catch (error) {
+      console.log("Error sending quote:", error);
+    }
   });
 
 client.on('interactionCreate', async interaction => {
