@@ -1,7 +1,6 @@
 import path from 'path';
 import dotenv from 'dotenv';
 import Discord from 'discord.js';
-import outdent from 'outdent';
 import { fromEvent } from 'rxjs';
 import { first, filter } from 'rxjs/operators';
 
@@ -89,7 +88,7 @@ message$
     );
 
     await mimic(content, message, client.user.id, {
-      embeds: [toEmbed(quote, client.user.username, client.user.displayAvatarURL())],
+      embeds: [await toEmbed(quote, client.user.username, client.user.displayAvatarURL())],
     });
   });
 
@@ -129,9 +128,12 @@ message$
       if (!(channel instanceof Discord.TextChannel)) {
         continue;
       }
-
-      const quote = await channel.messages.fetch(messageId);
-      embeds.push(toEmbed(quote, client.user.username, client.user.displayAvatarURL()));
+      try {
+        const quote = await channel.messages.fetch(messageId);
+        embeds.push(await toEmbed(quote, client.user.username, client.user.displayAvatarURL()));
+      } catch (e) {
+        console.log("Error fetching message:", e);
+      }
     }
 
     if (embeds.length === 0) {

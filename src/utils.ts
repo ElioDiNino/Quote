@@ -28,13 +28,18 @@ export const fetchMessageByText = async (
     );
 };
 
-export const getNickname = (message: Discord.Message) => {
-  const member = message?.member?.displayName;
-  return member ? member : message.author.tag;
+export const getNickname = async (message: Discord.Message) => {
+  var member = undefined;
+  try {
+    member = await message?.guild?.members.fetch(message.author) ?? undefined;
+  } catch (error) {
+    console.log("Error fetching member (the user is most likely no longer in the server)")
+  }
+  return member ? member.displayName : message.author.tag;
 };
 
-export const toEmbed = (message: Discord.Message, quoteName: string, avatarURL: string) => {
-  const nickname = getNickname(message);
+export const toEmbed = async (message: Discord.Message, quoteName: string, avatarURL: string) => {
+  const nickname = await getNickname(message);
   const title =
     message.channel instanceof Discord.TextChannel
       ? message.channel.name
@@ -113,13 +118,13 @@ export const mimic = async (
     await webhook.send({
       content: content,
       avatarURL: avatarURL ?? undefined,
-      username: getNickname(original),
+      username: await getNickname(original),
       ...options,
     });
   } else {
     await webhook.send({
       avatarURL: avatarURL ?? undefined,
-      username: getNickname(original),
+      username: await getNickname(original),
       ...options,
     });
   }
