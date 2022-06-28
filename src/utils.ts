@@ -1,4 +1,5 @@
 import Discord from 'discord.js';
+import outdent from 'outdent';
 
 export const not = <T extends unknown[]>(func: (...args: T) => boolean) => (
   ...args: T
@@ -40,6 +41,7 @@ export const toEmbed = (message: Discord.Message, quoteName: string, avatarURL: 
       : message.channel.id;
 
   const embed = new Discord.MessageEmbed()
+    .setColor('#2f3136')
     .setTitle(`#${title}`)
     .setDescription(message.content)
     .setURL(message.url)
@@ -56,6 +58,25 @@ export const toEmbed = (message: Discord.Message, quoteName: string, avatarURL: 
   const image = message.attachments.first();
   if (image) embed.setImage(image.url);
 
+  return embed;
+};
+
+export const helpEmbed = () => {
+  const embed = new Discord.MessageEmbed()
+    .setColor('#ff677d')
+    .setTitle("Quote Help")
+    .setDescription(outdent`
+    Quote allows you to quote messages in a better way!
+
+    > \`> <text>\`
+    Quote a message that contains \`<text>\` from the same channel and replace your message with an embed.
+
+    > \`<URL>\`
+    Quote a message by the \`<URL>\` and replace your message with an embed.
+
+    See GitHub for more information:
+    <https://github.com/ElioDiNino/Quote>
+  `)
   return embed;
 };
 
