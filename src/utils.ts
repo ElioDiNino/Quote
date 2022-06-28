@@ -15,7 +15,9 @@ export const fetchMessageByText = async (
   channel: Discord.Channel,
   excludes: string[] = [],
 ) => {
-  if (!(channel instanceof Discord.TextChannel || channel instanceof Discord.ThreadChannel)) {
+  if (!(channel instanceof Discord.TextChannel
+    || channel instanceof Discord.ThreadChannel
+    || channel instanceof Discord.NewsChannel)) {
     return;
   }
 
@@ -43,9 +45,11 @@ export const toEmbed = async (message: Discord.Message, quoteName: string, avata
   const title =
     message.channel instanceof Discord.TextChannel
       ? message.channel.name
-      : message.channel instanceof Discord.ThreadChannel
+      : message.channel instanceof Discord.NewsChannel
         ? message.channel.name
-        : message.channel.id;
+        : message.channel instanceof Discord.ThreadChannel
+          ? message.channel.name
+          : message.channel.id;
 
   const embed = new Discord.MessageEmbed()
     .setColor('#2f3136')
@@ -88,7 +92,7 @@ export const helpEmbed = () => {
 };
 
 export const fetchWebhook = async (
-  channel: Discord.TextChannel,
+  channel: Discord.TextChannel | Discord.NewsChannel,
   selfId: string,
 ) => {
   const webhook = await channel.fetchWebhooks().then((webhooks) =>
@@ -116,7 +120,7 @@ export const mimic = async (
   if (original.channel instanceof Discord.ThreadChannel && original.channel.parent?.type === 'GUILD_TEXT') {
     webhook = await fetchWebhook(original.channel.parent, selfId);
     options.threadId = original.channel.id;
-  } else if (original.channel instanceof Discord.TextChannel) {
+  } else if (original.channel instanceof Discord.TextChannel || original.channel instanceof Discord.NewsChannel) {
     webhook = await fetchWebhook(original.channel, selfId);
   } else {
     return;
