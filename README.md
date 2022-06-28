@@ -17,7 +17,7 @@ Quote a message that contains `text` from the same channel and replace your mess
 
 Quote a message by the URL and replace your message with an embed.
 
-### `$help`
+### `/help` or `$help`
 
 Shows the help menu
 
@@ -101,5 +101,5 @@ npm run build
 Finally, you can start the bot by the following command:
 
 ```
-node ./dist/index.js
+npm run start
 ```
