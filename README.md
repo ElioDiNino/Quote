@@ -54,7 +54,7 @@ Since Quote uses Discord's Webhook API to replace your message, the embed was ac
 
 ## Deployment
 ### Requirements
- - Node.js >= 12
+ - Node.js >= 16.6.0
  - npm
  - Git
 
@@ -68,7 +68,7 @@ Copy the example of configuration file then edit it
 
 ```
 cp .env.example .env
-vim .env
+nano .env
 ```
 
 Here's the detail of the environment variables
