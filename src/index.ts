@@ -1,15 +1,12 @@
 import path from 'path';
 import dotenv from 'dotenv';
-import Discord, { Permissions } from 'discord.js';
-import { fromEvent } from 'rxjs';
-import { first, filter } from 'rxjs/operators';
+import Discord, { GatewayIntentBits } from 'discord.js';
 
 import {
   mimic,
   toEmbed,
   isBot,
   match,
-  not,
   fetchMessageByText,
   removeEmptyLines,
   helpEmbed,
@@ -21,67 +18,63 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const client = new Discord.Client({
   intents: [
-    Discord.Intents.FLAGS.GUILDS,
-    Discord.Intents.FLAGS.GUILD_MESSAGES,
-    Discord.Intents.FLAGS.GUILD_WEBHOOKS
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildWebhooks
   ]
 });
-const ready$ = fromEvent<void>(client, 'ready');
-const message$ = fromEvent<Discord.Message>(client, 'messageCreate');
 
-ready$.pipe(first()).subscribe(async () => {
+// Bot login
+client.once('ready', () => {
   if (client.user == null) {
     return;
   }
 
   console.log(`Logged in as ${client.user.tag}`);
 
-  await client.user.setActivity({
-    type: 'LISTENING',
+  // Set 'Listening to /help' status
+  client.user.setActivity({
+    type: Discord.ActivityType.Listening,
     name: '/help',
   });
-});
+})
 
-/**
- * Help
- * @example
- * /help
- */
-message$
-  .pipe(
-    filter((message) => message.content.startsWith('$help')),
-    filter(not(isBot)),
-  )
-  .subscribe(async (message) => {
+// Look for new messages
+client.on('messageCreate', async (message) => {
+  // Make sure the message is not from a bot and that other conditions are met
+  if (isBot(message) || client.user == null || message.guild == null) {
+    return;
+  }
+
+  /**
+   * Help
+   * @example
+   * /help
+  */
+  if (message.content.startsWith('$help')) {
     try {
       await message.channel.send({ embeds: [helpEmbed()] });
     } catch (error) {
       console.log("Error sending help command:", error);
     }
+  }
 
-  });
-
-/**
- * Markdown style quotation
- * @example
- * > message
- */
-message$
-  .pipe(filter(not(isBot)), filter(match(MARKDOWN)))
-  .subscribe(async (message) => {
-    if (client.user == null) {
-      return;
-    }
-
+  /**
+   * Markdown style quotation
+   * @example
+   * > message
+   */
+  else if (message.content.match(MARKDOWN)) {
     const fragments = message.content.match(new RegExp(MARKDOWN, 'gm')) ?? [];
     const text = fragments
       .map((fragment) => fragment.match(MARKDOWN)?.groups?.text)
       .filter((match) => match != null)
       .join('\n');
 
-    if (message.channel.type !== 'GUILD_TEXT'
-      && message.channel.type !== 'GUILD_PUBLIC_THREAD'
-      && message.channel.type !== 'GUILD_NEWS') {
+    if (message.channel.type !== Discord.ChannelType.GuildText
+      && message.channel.type !== Discord.ChannelType.GuildPublicThread
+      && message.channel.type !== Discord.ChannelType.GuildNews) {
       return;
     }
 
@@ -95,8 +88,8 @@ message$
       message.content.replace(new RegExp(MARKDOWN, 'gm'), ''),
     );
 
-    if (!(message.member?.permissions.has(Permissions.FLAGS.MENTION_EVERYONE)
-      || message.member?.permissions.has(Permissions.FLAGS.ADMINISTRATOR))) {
+    if (!(message.member?.permissions.has(Discord.PermissionFlagsBits.MentionEveryone)
+      || message.member?.permissions.has(Discord.PermissionFlagsBits.Administrator))) {
       content = replaceRoleMentions(message, content);
     }
 
@@ -107,23 +100,17 @@ message$
     } catch (error) {
       console.log("Error sending quote:", error);
     }
-  });
+  }
 
-/**
- * URL quotation
- * @example
- * https://discordapp.com/channels/123/456/789
- */
-message$
-  .pipe(filter(not(isBot)), filter(match(URL)))
-  .subscribe(async (message) => {
-    if (client.user == null || message.guild == null) {
-      return;
-    }
-
+  /**
+   * URL quotation
+   * @example
+   * https://discordapp.com/channels/123/456/789
+   */
+  else if (message.content.match(URL)) {
     const urls = message.content.match(new RegExp(URL, 'gm')) ?? [];
     const matches = urls.map((url) => url.match(URL));
-    const embeds: Discord.MessageEmbed[] = [];
+    const embeds: Discord.EmbedBuilder[] = [];
 
     for (const match of matches) {
       if (
@@ -163,8 +150,8 @@ message$
       message.content.replace(new RegExp(URL, 'gm'), ''),
     );
 
-    if (!(message.member?.permissions.has(Permissions.FLAGS.MENTION_EVERYONE)
-      || message.member?.permissions.has(Permissions.FLAGS.ADMINISTRATOR))) {
+    if (!(message.member?.permissions.has(Discord.PermissionFlagsBits.MentionEveryone)
+      || message.member?.permissions.has(Discord.PermissionFlagsBits.Administrator))) {
       content = replaceRoleMentions(message, content);
     }
 
@@ -175,10 +162,11 @@ message$
     } catch (error) {
       console.log("Error sending quote:", error);
     }
-  });
+  }
+});
 
 client.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
+  if (interaction.type !== Discord.InteractionType.ApplicationCommand) return;
 
   const { commandName } = interaction;
 
@@ -186,6 +174,102 @@ client.on('interactionCreate', async interaction => {
     await interaction.reply({
       embeds: [helpEmbed()], ephemeral: true
     })
+  }
+
+  if (commandName === 'quote') {
+    const method = interaction.options.get('method')?.value;
+    const value = interaction.options.get('value')?.value;
+
+    if (typeof value !== 'string' || client.user == null || interaction.guild == null) {
+      await interaction.reply({
+        content: 'Error! Please try again', ephemeral: true
+      })
+      return;
+    }
+
+    if (method === 'url') {
+      const urls = value.match(new RegExp(URL, 'gm')) ?? [];
+      const matches = urls.map((url) => url.match(URL));
+      const embeds: Discord.EmbedBuilder[] = [];
+
+      for (const match of matches) {
+        if (
+          !match?.groups?.channelId ||
+          !match?.groups?.messageId ||
+          !match?.groups?.guildId
+        ) {
+          continue;
+        }
+
+        const { guildId, channelId, messageId } = match.groups;
+
+        if (guildId !== interaction.guild?.id) {
+          continue;
+        }
+
+        const channel = await client.channels.fetch(channelId);
+
+        if (!(channel instanceof Discord.TextChannel
+          || channel instanceof Discord.ThreadChannel
+          || channel instanceof Discord.NewsChannel)) {
+          continue;
+        }
+        try {
+          const quote = await channel.messages.fetch(messageId);
+          embeds.push(await toEmbed(quote, client.user.username, client.user.displayAvatarURL()));
+        } catch (e) {
+          console.log("Error fetching message:", e);
+        }
+      }
+
+      if (embeds.length === 0) {
+        await interaction.reply({
+          content: 'No message found at that link', ephemeral: true
+        })
+        return;
+      }
+
+      try {
+        await interaction.reply({
+          embeds: embeds
+        })
+      } catch (error) {
+        await interaction.reply({
+          content: 'Error! Please try again', ephemeral: true
+        })
+        console.log("Error sending quote:", error);
+      }
+    }
+    else {
+      if (interaction.channel?.type !== Discord.ChannelType.GuildText
+        && interaction.channel?.type !== Discord.ChannelType.GuildPublicThread
+        && interaction.channel?.type !== Discord.ChannelType.GuildNews) {
+        await interaction.reply({
+          content: 'I am unable to execute this in this channel', ephemeral: true
+        })
+        return;
+      }
+
+      const quote = await fetchMessageByText(value, interaction.channel, ['0']);
+
+      if (quote == null) {
+        await interaction.reply({
+          content: 'No messages (in this channel and within the last 100) were found with that text. Try using a link instead', ephemeral: true
+        })
+        return;
+      }
+
+      try {
+        await interaction.reply({
+          embeds: [await toEmbed(quote, client.user.username, client.user.displayAvatarURL())]
+        })
+      } catch (error) {
+        await interaction.reply({
+          content: 'Error! Please try again', ephemeral: true
+        })
+        console.log("Error sending quote:", error);
+      }
+    }
   }
 });
 

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require('discord.js');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 import path from 'path';
@@ -17,7 +17,22 @@ const guildId = '788505451720474684';
 const commands = [
     new SlashCommandBuilder()
         .setName('help')
-        .setDescription('Get help with using the bot')
+        .setDescription('Get help with using the bot'),
+    new SlashCommandBuilder()
+        .setName('quote')
+        .setDescription('Quote a message with a URL or text')
+        .addStringOption((option: typeof SlashCommandBuilder) =>
+            option.setName('method')
+                .setDescription('How you want to quote the message (text only works in the same channel)')
+                .setRequired(true)
+                .addChoices(
+                    { name: 'url', value: 'url' },
+                    { name: 'text', value: 'text' },))
+        .addStringOption((option: typeof SlashCommandBuilder) =>
+            option.setName('value')
+                .setDescription('The URL or (partial) text of the message you want to quote')
+                .setRequired(true)
+        )
 ]
     .map(command => command.toJSON())
 
