@@ -51,7 +51,7 @@ export const toEmbed = async (message: Discord.Message, quoteName: string, avata
           ? message.channel.name
           : message.channel.id;
 
-  const embed = new Discord.MessageEmbed()
+  const embed = new Discord.EmbedBuilder()
     .setColor('#2f3136')
     .setTitle(`#${title}`)
     .setDescription(message.content)
@@ -59,7 +59,7 @@ export const toEmbed = async (message: Discord.Message, quoteName: string, avata
     .setTimestamp(message.createdTimestamp)
     .setFooter({ text: quoteName, iconURL: avatarURL });
 
-  const avatar = message.author.displayAvatarURL({ format: 'png', size: 64 });
+  const avatar = message.author.displayAvatarURL({ extension: 'png', size: 64 });
   if (avatar) {
     embed.setAuthor({ name: nickname, iconURL: avatar });
   } else {
@@ -73,7 +73,7 @@ export const toEmbed = async (message: Discord.Message, quoteName: string, avata
 };
 
 export const helpEmbed = () => {
-  const embed = new Discord.MessageEmbed()
+  const embed = new Discord.EmbedBuilder()
     .setColor('#ff677d')
     .setTitle("Quote Help")
     .setDescription(outdent`
@@ -84,6 +84,9 @@ export const helpEmbed = () => {
 
     > \`<URL>\`
     Quote a message by the \`<URL>\` and replace your message with an embed.
+
+    > /quote <method> <value>
+    Quote a message via either of the above methods with a slash command.
 
     See GitHub for more information:
     <https://github.com/ElioDiNino/Quote>
@@ -102,7 +105,7 @@ export const fetchWebhook = async (
   );
 
   if (webhook) return webhook;
-  return channel.createWebhook(process.env.DISCORD_WEBHOOK_NAME ?? 'quote');
+  return channel.createWebhook({ name: process.env.DISCORD_WEBHOOK_NAME ?? 'quote' });
 };
 
 type WebhookSendParam = Discord.WebhookMessageOptions & { split?: false };
@@ -117,7 +120,7 @@ export const mimic = async (
   await original.delete();
 
   var webhook = undefined;
-  if (original.channel instanceof Discord.ThreadChannel && original.channel.parent?.type === 'GUILD_TEXT') {
+  if (original.channel instanceof Discord.ThreadChannel && original.channel.parent?.type === Discord.ChannelType.GuildText) {
     webhook = await fetchWebhook(original.channel.parent, selfId);
     options.threadId = original.channel.id;
   } else if (original.channel instanceof Discord.TextChannel || original.channel instanceof Discord.NewsChannel) {
