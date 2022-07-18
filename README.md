@@ -89,13 +89,19 @@ Then, install Node.js dependencies with npm
 npm install
 ```
 
-Then build the programme written in TypeScript into runnable JavaScript
+Then build the program written in TypeScript into runnable JavaScript
 
 ```
 npm run build
 ```
 
-Finally, you can start the bot by the following command:
+Then, deploy the bot's slash commands to Discord
+
+```
+npm run deploy
+```
+
+Finally, you can start the bot with the following command:
 
 ```
 npm run start
