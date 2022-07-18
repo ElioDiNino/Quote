@@ -85,7 +85,7 @@ export const helpEmbed = () => {
     > \`<URL>\`
     Quote a message by the \`<URL>\` and replace your message with an embed.
 
-    > /quote <method> <value>
+    > \`/quote <method> <value>\`
     Quote a message via either of the above methods with a slash command.
 
     See GitHub for more information:
