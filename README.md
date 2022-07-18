@@ -17,6 +17,10 @@ Quote a message that contains `text` from the same channel and replace your mess
 
 Quote a message by the URL and replace your message with an embed.
 
+### `/quote <method> <value>`
+
+Quote a message via either of the above methods with a slash command.
+
 ### `/help` or `$help`
 
 Shows the help menu
