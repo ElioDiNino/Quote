@@ -58,7 +58,7 @@ Since Quote uses Discord's Webhook API to replace your message, the embed was ac
 
 ## Deployment
 ### Requirements
- - Node.js >= 16.6.0
+ - Node.js >= 16.9.0
  - npm
  - Git
 
