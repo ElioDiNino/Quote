@@ -41,7 +41,10 @@ export const getNickname = async (message: Discord.Message) => {
 };
 
 export const toEmbed = async (message: Discord.Message, quoteName: string, avatarURL: string) => {
-  const nickname = await getNickname(message);
+  var nickname = await getNickname(message);
+  if (message.webhookId && nickname.endsWith("#0000")) {
+    nickname = nickname.slice(0, -5);
+  }
   const title =
     message.channel instanceof Discord.TextChannel
       ? message.channel.name
@@ -54,7 +57,7 @@ export const toEmbed = async (message: Discord.Message, quoteName: string, avata
   const embed = new Discord.EmbedBuilder()
     .setColor('#2f3136')
     .setTitle(`#${title}`)
-    .setDescription(message.content)
+    .setDescription(message.content != '' ? message.content : null)
     .setURL(message.url)
     .setTimestamp(message.createdTimestamp)
     .setFooter({ text: quoteName, iconURL: avatarURL });
