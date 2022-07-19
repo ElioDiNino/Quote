@@ -80,6 +80,8 @@ Here's the detail of the environment variables
 | env | nullability | description |
 | :-  | :- | :- |
 | `DISCORD_TOKEN` | **required** | Access token of your Discord bot |
+| `CLIENT_ID` | **required** | The Client ID of your bot for slash command deployment |
+| `GUILD_ID` | optional | Specify a Server/Guild ID to deploy slash commands to a single server instead of globally (blank otherwise) |
 | `DISCORD_WEBHOOK_NAME` | optional | Namespace of Webhook API which will be used for identifying channels. Defaults to `quote` |
 | `NODE_ENV` | optional | You can set `production` to enable some optimisations | 
 

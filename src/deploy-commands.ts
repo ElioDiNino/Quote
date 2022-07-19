@@ -36,13 +36,22 @@ const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
     try {
         console.log('Started refreshing application (/) commands.');
 
-        await rest.put(
+
+        if (process.env.GUILD_ID) {
             // For server-specific command deployment (good for testing)
-            // Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
+            console.log('Deploying commands to server:', process.env.GUILD_ID);
+            await rest.put(
+                Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
+                { body: commands },
+            );
+        } else {
             // For global command deployment (use in production)
-            Routes.applicationCommands(process.env.CLIENT_ID),
-            { body: commands },
-        );
+            console.log('Deploying commands to all servers');
+            await rest.put(
+                Routes.applicationCommands(process.env.CLIENT_ID),
+                { body: commands },
+            );
+        }
 
         console.log('Successfully reloaded application (/) commands.');
     } catch (error) {
