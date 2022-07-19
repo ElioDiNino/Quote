@@ -3,14 +3,11 @@ import dotenv from 'dotenv';
 import Discord, { GatewayIntentBits } from 'discord.js';
 
 import {
-  mimic,
-  toEmbed,
   isBot,
   match,
-  fetchMessageByText,
-  removeEmptyLines,
   helpEmbed,
-  replaceRoleMentions,
+  urlQuote,
+  textQuote,
 } from './utils';
 import { URL, MARKDOWN } from './regexps';
 
@@ -43,7 +40,7 @@ client.once('ready', () => {
 // Look for new messages
 client.on('messageCreate', async (message) => {
   // Make sure the message is not from a bot and that other conditions are met
-  if (isBot(message) || client.user == null || message.guild == null) {
+  if (isBot(message) || client.user == null) {
     return;
   }
 
@@ -72,34 +69,7 @@ client.on('messageCreate', async (message) => {
       .filter((match) => match != null)
       .join('\n');
 
-    if (message.channel.type !== Discord.ChannelType.GuildText
-      && message.channel.type !== Discord.ChannelType.GuildPublicThread
-      && message.channel.type !== Discord.ChannelType.GuildNews) {
-      return;
-    }
-
-    const quote = await fetchMessageByText(text, message.channel, [message.id]);
-
-    if (quote == null) {
-      return;
-    }
-
-    var content = removeEmptyLines(
-      message.content.replace(new RegExp(MARKDOWN, 'gm'), ''),
-    );
-
-    if (!(message.member?.permissions.has(Discord.PermissionFlagsBits.MentionEveryone)
-      || message.member?.permissions.has(Discord.PermissionFlagsBits.Administrator))) {
-      content = replaceRoleMentions(message, content);
-    }
-
-    try {
-      await mimic(content, message, client.user.id, {
-        embeds: [await toEmbed(quote, client.user.username, client.user.displayAvatarURL())],
-      });
-    } catch (error) {
-      console.log("Error sending quote:", error);
-    }
+    textQuote(client, text, message);
   }
 
   /**
@@ -108,167 +78,42 @@ client.on('messageCreate', async (message) => {
    * https://discordapp.com/channels/123/456/789
    */
   else if (message.content.match(URL)) {
-    const urls = message.content.match(new RegExp(URL, 'gm')) ?? [];
-    const matches = urls.map((url) => url.match(URL));
-    const embeds: Discord.EmbedBuilder[] = [];
-
-    for (const match of matches) {
-      if (
-        !match?.groups?.channelId ||
-        !match?.groups?.messageId ||
-        !match?.groups?.guildId
-      ) {
-        continue;
-      }
-
-      const { guildId, channelId, messageId } = match.groups;
-
-      if (guildId !== message.guild.id) {
-        continue;
-      }
-
-      const channel = await client.channels.fetch(channelId);
-
-      if (!(channel instanceof Discord.TextChannel
-        || channel instanceof Discord.ThreadChannel
-        || channel instanceof Discord.NewsChannel)) {
-        continue;
-      }
-      try {
-        const quote = await channel.messages.fetch(messageId);
-        embeds.push(await toEmbed(quote, client.user.username, client.user.displayAvatarURL()));
-      } catch (e) {
-        console.log("Error fetching message:", e);
-      }
-    }
-
-    if (embeds.length === 0) {
-      return;
-    }
-
-    var content = removeEmptyLines(
-      message.content.replace(new RegExp(URL, 'gm'), ''),
-    );
-
-    if (!(message.member?.permissions.has(Discord.PermissionFlagsBits.MentionEveryone)
-      || message.member?.permissions.has(Discord.PermissionFlagsBits.Administrator))) {
-      content = replaceRoleMentions(message, content);
-    }
-
-    try {
-      await mimic(content, message, client.user.id, {
-        embeds,
-      });
-    } catch (error) {
-      console.log("Error sending quote:", error);
-    }
+    urlQuote(client, message.content, message);
   }
 });
 
+// Slash command responses
 client.on('interactionCreate', async interaction => {
   if (interaction.type !== Discord.InteractionType.ApplicationCommand) return;
 
   const { commandName } = interaction;
 
+  // Help command response
   if (commandName === 'help') {
     await interaction.reply({
       embeds: [helpEmbed()], ephemeral: true
     })
   }
 
+  // Quote command response
   if (commandName === 'quote') {
     const method = interaction.options.get('method')?.value;
     const value = interaction.options.get('value')?.value;
 
-    if (typeof value !== 'string' || client.user == null || interaction.guild == null) {
+    if (typeof value !== 'string') {
       await interaction.reply({
         content: 'Error! Please try again', ephemeral: true
       })
       return;
     }
 
+    // If 'url' method, it follows the URL quotation method from above
     if (method === 'url') {
-      const urls = value.match(new RegExp(URL, 'gm')) ?? [];
-      const matches = urls.map((url) => url.match(URL));
-      const embeds: Discord.EmbedBuilder[] = [];
-
-      for (const match of matches) {
-        if (
-          !match?.groups?.channelId ||
-          !match?.groups?.messageId ||
-          !match?.groups?.guildId
-        ) {
-          continue;
-        }
-
-        const { guildId, channelId, messageId } = match.groups;
-
-        if (guildId !== interaction.guild?.id) {
-          continue;
-        }
-
-        const channel = await client.channels.fetch(channelId);
-
-        if (!(channel instanceof Discord.TextChannel
-          || channel instanceof Discord.ThreadChannel
-          || channel instanceof Discord.NewsChannel)) {
-          continue;
-        }
-        try {
-          const quote = await channel.messages.fetch(messageId);
-          embeds.push(await toEmbed(quote, client.user.username, client.user.displayAvatarURL()));
-        } catch (e) {
-          console.log("Error fetching message:", e);
-        }
-      }
-
-      if (embeds.length === 0) {
-        await interaction.reply({
-          content: 'No message found at that link', ephemeral: true
-        })
-        return;
-      }
-
-      try {
-        await interaction.reply({
-          embeds: embeds
-        })
-      } catch (error) {
-        await interaction.reply({
-          content: 'Error! Please try again', ephemeral: true
-        })
-        console.log("Error sending quote:", error);
-      }
+      urlQuote(client, value, undefined, interaction);
     }
+    // If 'text' method, it follows the text quotation method from above
     else {
-      if (interaction.channel?.type !== Discord.ChannelType.GuildText
-        && interaction.channel?.type !== Discord.ChannelType.GuildPublicThread
-        && interaction.channel?.type !== Discord.ChannelType.GuildNews) {
-        await interaction.reply({
-          content: 'I am unable to execute this in this channel', ephemeral: true
-        })
-        return;
-      }
-
-      const quote = await fetchMessageByText(value, interaction.channel, ['0']);
-
-      if (quote == null) {
-        await interaction.reply({
-          content: 'No messages (in this channel and within the last 100) were found with that text. Try using a link instead', ephemeral: true
-        })
-        return;
-      }
-
-      try {
-        await interaction.reply({
-          embeds: [await toEmbed(quote, client.user.username, client.user.displayAvatarURL())]
-        })
-      } catch (error) {
-        await interaction.reply({
-          content: 'Error! Please try again', ephemeral: true
-        })
-        console.log("Error sending quote:", error);
-      }
+      textQuote(client, value, undefined, interaction);
     }
   }
 });
