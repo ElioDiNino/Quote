@@ -35,16 +35,17 @@ export const getNickname = async (message: Discord.Message) => {
   try {
     member = await message?.guild?.members.fetch(message.author) ?? undefined;
   } catch (error) {
-    console.log("Error fetching member (the user is most likely no longer in the server)")
+    console.log("Error fetching member:", error);
   }
-  return member ? member.displayName : message.author.tag;
+  return member
+    ? member.displayName
+    : message.webhookId
+      ? message.author.tag.slice(0, -5)
+      : message.author.tag;
 };
 
 export const toEmbed = async (message: Discord.Message, quoteName: string, avatarURL: string) => {
-  var nickname = await getNickname(message);
-  if (message.webhookId && nickname.endsWith("#0000")) {
-    nickname = nickname.slice(0, -5);
-  }
+  const nickname = await getNickname(message);
   const title =
     message.channel instanceof Discord.TextChannel
       ? message.channel.name
