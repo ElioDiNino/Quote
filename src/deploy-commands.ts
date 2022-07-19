@@ -6,18 +6,12 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-// Main Bot
-// const clientId = '975140381786271866';
-// Beta Bot
-const clientId = '986285272582983701';
-// Test Server ID
-const guildId = '788505451720474684';
-
-
 const commands = [
+    // '/help' command
     new SlashCommandBuilder()
         .setName('help')
         .setDescription('Get help with using the bot'),
+    // '/quote <method> <value>' command
     new SlashCommandBuilder()
         .setName('quote')
         .setDescription('Quote a message with a URL or text')
@@ -43,8 +37,10 @@ const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
         console.log('Started refreshing application (/) commands.');
 
         await rest.put(
-            // Routes.applicationGuildCommands(clientId, guildId),
-            Routes.applicationCommands(clientId),
+            // For server-specific command deployment (good for testing)
+            // Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
+            // For global command deployment (use in production)
+            Routes.applicationCommands(process.env.CLIENT_ID),
             { body: commands },
         );
 
