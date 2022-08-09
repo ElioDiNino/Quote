@@ -112,6 +112,3 @@ persistence.json
 
 # Yarn package file
 yarn.lock
-
-# npm package file
-package-lock.json
