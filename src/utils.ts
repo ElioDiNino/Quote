@@ -113,7 +113,7 @@ export const fetchWebhook = async (
   return channel.createWebhook({ name: process.env.DISCORD_WEBHOOK_NAME ?? 'quote' });
 };
 
-type WebhookSendParam = Discord.WebhookMessageOptions & { split?: false };
+type WebhookSendParam = Discord.WebhookCreateMessageOptions & { split?: false };
 
 export const mimic = async (
   content: string,
@@ -321,12 +321,12 @@ export const textQuote = async (
   // Check that the channel type is accepted
   if ((message
     && message.channel.type !== Discord.ChannelType.GuildText
-    && message.channel.type !== Discord.ChannelType.GuildPublicThread
-    && message.channel.type !== Discord.ChannelType.GuildNews)
+    && message.channel.type !== Discord.ChannelType.PublicThread
+    && message.channel.type !== Discord.ChannelType.GuildAnnouncement)
     || (interaction
       && interaction.channel?.type !== Discord.ChannelType.GuildText
-      && interaction.channel?.type !== Discord.ChannelType.GuildPublicThread
-      && interaction.channel?.type !== Discord.ChannelType.GuildNews)) {
+      && interaction.channel?.type !== Discord.ChannelType.PublicThread
+      && interaction.channel?.type !== Discord.ChannelType.GuildAnnouncement)) {
     if (interaction) {
       await interaction.reply({
         content: 'I am unable to execute this in this channel', ephemeral: true
