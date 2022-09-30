@@ -100,7 +100,7 @@ export const helpEmbed = () => {
 };
 
 export const fetchWebhook = async (
-  channel: Discord.TextChannel | Discord.NewsChannel,
+  channel: Discord.TextChannel | Discord.NewsChannel | Discord.ForumChannel,
   selfId: string,
 ) => {
   const webhook = await channel.fetchWebhooks().then((webhooks) =>
@@ -125,7 +125,10 @@ export const mimic = async (
   await original.delete();
 
   var webhook = undefined;
-  if (original.channel instanceof Discord.ThreadChannel && original.channel.parent?.type === Discord.ChannelType.GuildText) {
+  if ((original.channel instanceof Discord.ThreadChannel &&
+    (original.channel.parent?.type === Discord.ChannelType.GuildText
+      || original.channel.parent?.type === Discord.ChannelType.GuildForum
+      || original.channel.parent?.type === Discord.ChannelType.GuildAnnouncement))) {
     webhook = await fetchWebhook(original.channel.parent, selfId);
     options.threadId = original.channel.id;
   } else if (original.channel instanceof Discord.TextChannel || original.channel instanceof Discord.NewsChannel) {
@@ -322,11 +325,13 @@ export const textQuote = async (
   if ((message
     && message.channel.type !== Discord.ChannelType.GuildText
     && message.channel.type !== Discord.ChannelType.PublicThread
-    && message.channel.type !== Discord.ChannelType.GuildAnnouncement)
+    && message.channel.type !== Discord.ChannelType.GuildAnnouncement
+    && message.channel.type !== Discord.ChannelType.AnnouncementThread)
     || (interaction
       && interaction.channel?.type !== Discord.ChannelType.GuildText
       && interaction.channel?.type !== Discord.ChannelType.PublicThread
-      && interaction.channel?.type !== Discord.ChannelType.GuildAnnouncement)) {
+      && interaction.channel?.type !== Discord.ChannelType.GuildAnnouncement
+      && interaction.channel?.type !== Discord.ChannelType.AnnouncementThread)) {
     if (interaction) {
       await interaction.reply({
         content: 'I am unable to execute this in this channel', ephemeral: true
