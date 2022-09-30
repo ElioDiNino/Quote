@@ -47,7 +47,7 @@ client.on('messageCreate', async (message) => {
   /**
    * Help
    * @example
-   * /help
+   * $help
   */
   if (message.content.startsWith('$help')) {
     try {
