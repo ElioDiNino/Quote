@@ -51,7 +51,9 @@ client.on('messageCreate', async (message) => {
   */
   if (message.content.startsWith('$help')) {
     try {
-      await message.channel.send({ embeds: [helpEmbed()] });
+      if (!(message.channel instanceof Discord.StageChannel)) {
+        await message.channel.send({ embeds: [helpEmbed()] });
+      } else throw new Error('Cannot send message in stage channel');
     } catch (error) {
       console.log("Error sending help command:", error);
     }
