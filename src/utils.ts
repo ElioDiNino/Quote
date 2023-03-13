@@ -113,7 +113,7 @@ export const fetchWebhook = async (
   return channel.createWebhook({ name: process.env.DISCORD_WEBHOOK_NAME ?? 'quote' });
 };
 
-type WebhookSendParam = Discord.WebhookCreateMessageOptions & { split?: false };
+type WebhookSendParam = Discord.WebhookMessageCreateOptions & { split?: false };
 
 export const mimic = async (
   content: string,
