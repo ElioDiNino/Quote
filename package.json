@@ -27,7 +27,7 @@
   "dependencies": {
     "@discordjs/rest": "^1.6.0",
     "@types/babel__core": "^7.20.0",
-    "@types/node": "^18.15.1",
+    "@types/node": "^18.15.3",
     "discord-api-types": "^0.37.35",
     "discord.js": "^14.8.0",
     "dotenv": "^16.0.3",
