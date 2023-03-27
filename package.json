@@ -28,7 +28,7 @@
     "@discordjs/rest": "^1.6.0",
     "@types/babel__core": "^7.20.0",
     "@types/node": "^18.15.10",
-    "discord-api-types": "^0.37.36",
+    "discord-api-types": "^0.37.37",
     "discord.js": "^14.8.0",
     "dotenv": "^16.0.3",
     "outdent": "^0.8.0",
