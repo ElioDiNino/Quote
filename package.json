@@ -32,7 +32,7 @@
     "discord.js": "^14.8.0",
     "dotenv": "^16.0.3",
     "outdent": "^0.8.0",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.3"
   },
   "devDependencies": {
     "@types/jest": "^28.1.8",
