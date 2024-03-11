@@ -27,12 +27,12 @@
   "dependencies": {
     "@discordjs/rest": "^2.2.0",
     "@types/babel__core": "^7.20.5",
-    "@types/node": "^20.11.24",
-    "discord-api-types": "^0.37.71",
+    "@types/node": "^20.11.25",
+    "discord-api-types": "^0.37.73",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "outdent": "^0.8.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.2"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
