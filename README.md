@@ -1,17 +1,13 @@
-# <img alt="Quote" src="https://i.imgur.com/iqDW7gp.png" width="280px" />
+# <img alt="Quote" src="https://github.com/ElioDiNino/Quote/tree/main/static/logo.png" width="280px" />
 
-![eyecatch](https://i.imgur.com/dlglta1.png)
+![Banner](https://github.com/ElioDiNino/Quote/tree/main/static/banner.png)
 
 > Quote allows you to quote messages in a better way
 
 
-### **[See the source repository](https://github.com/nakayoshi/quote)**
+### **[See the original source repository](https://github.com/nakayoshi/quote)**
 
 ## Usage
-
-### `> <text>`
-
-Quote a message that contains `text` from the same channel and replace your message with an embed.
 
 ### `<url>`
 
@@ -19,7 +15,7 @@ Quote a message by the URL and replace your message with an embed.
 
 ### `/quote <method> <value>`
 
-Quote a message via either of the above methods with a slash command.
+Quote a message via either a URL (as above) or by matching a message that contains text from the same channel.
 
 ### `/help` or `$help`
 
@@ -27,7 +23,7 @@ Shows the help menu
 
 ## How it works
 
-Quote uses Discord's Webhook API to send messages with a customised username and an avatar. It deletes the original message and uses this technique to pretend the message as if it was sent by another user.
+Quote uses Discord's Webhook API to send messages with a customized username and an avatar. It deletes the original message and uses this technique to pretend the message as if it was sent by another user.
 
 ## Required Permissions
 - Manage Webhooks
@@ -58,7 +54,7 @@ Since Quote uses Discord's Webhook API to replace your message, the embed was ac
 
 ## Deployment
 ### Requirements
- - Node.js >= 16.9.0
+ - Node.js >= 20
  - npm
  - Git
 
@@ -83,7 +79,7 @@ Here's the detail of the environment variables
 | `CLIENT_ID` | **required** | The Client ID of your bot for slash command deployment |
 | `GUILD_ID` | optional | Specify a Server/Guild ID to deploy slash commands to a single server instead of globally (blank otherwise) |
 | `DISCORD_WEBHOOK_NAME` | optional | Namespace of Webhook API which will be used for identifying channels. Defaults to `quote` |
-| `NODE_ENV` | optional | You can set `production` to enable some optimisations | 
+| `NODE_ENV` | optional | You can set `production` to enable some optimizations | 
 
 Then, install Node.js dependencies with npm
 
@@ -107,4 +103,12 @@ Finally, you can start the bot with the following command:
 
 ```
 npm run start
+```
+
+### Removing Slash Commands
+
+If you want to remove the slash commands from your server, you can use the following command. You will be prompted for the command ID to remove.
+
+```
+npm run remove
 ```
