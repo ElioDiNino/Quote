@@ -112,3 +112,6 @@ persistence.json
 
 # Yarn package file
 yarn.lock
+
+# macOS Finder directory files
+.DS_Store
