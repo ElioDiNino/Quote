@@ -4,7 +4,6 @@ import Discord, { GatewayIntentBits } from 'discord.js';
 
 import {
   isBot,
-  match,
   helpEmbed,
   urlQuote,
   textQuote,
@@ -57,21 +56,6 @@ client.on('messageCreate', async (message) => {
     } catch (error) {
       console.log("Error sending help command:", error);
     }
-  }
-
-  /**
-   * Markdown style quotation
-   * @example
-   * > message
-   */
-  else if (message.content.match(MARKDOWN)) {
-    const fragments = message.content.match(new RegExp(MARKDOWN, 'gm')) ?? [];
-    const text = fragments
-      .map((fragment) => fragment.match(MARKDOWN)?.groups?.text)
-      .filter((match) => match != null)
-      .join('\n');
-
-    textQuote(client, text, message);
   }
 
   /**

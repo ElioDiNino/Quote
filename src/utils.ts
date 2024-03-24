@@ -84,14 +84,11 @@ export const helpEmbed = () => {
     .setDescription(outdent`
     Quote allows you to quote messages in a better way!
 
-    > \`> <text>\`
-    Quote a message that contains \`<text>\` from the same channel and replace your message with an embed.
-
     > \`<URL>\`
     Quote a message by the \`<URL>\` and replace your message with an embed.
 
     > \`/quote <method> <value>\`
-    Quote a message via either of the above methods with a slash command.
+    Quote a message via either a \`<URL>\` (as above) or by matching a message that contains \`<text>\` from the same channel.
 
     See GitHub for more information:
     <https://github.com/ElioDiNino/Quote>
