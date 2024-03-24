@@ -1,6 +1,6 @@
-# <img alt="Quote" src="https://github.com/ElioDiNino/Quote/tree/main/static/logo.png" width="280px" />
+# <img alt="Quote" src="https://github.com/ElioDiNino/Quote/blob/main/static/logo.png" width="280px" />
 
-![Banner](https://github.com/ElioDiNino/Quote/tree/main/static/banner.png)
+![Banner](https://github.com/ElioDiNino/Quote/blob/main/static/banner.png)
 
 > Quote allows you to quote messages in a better way
 
