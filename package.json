@@ -32,11 +32,11 @@
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "outdent": "^0.8.0",
-    "typescript": "^5.4.4"
+    "typescript": "^5.4.5"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.12.5",
+    "@types/node": "^20.12.7",
     "jest": "^29.7.0",
     "prettier": "^3.2.5",
     "ts-jest": "^29.1.2"
