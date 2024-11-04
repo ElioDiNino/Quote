@@ -1,3 +1,6 @@
+> [!WARNING]
+> This project has been archived due to Discord's release of message forwarding which supports Quote's functionality natively.
+
 # <img alt="Quote" src="https://github.com/ElioDiNino/Quote/blob/main/static/logo.png" width="280px" />
 
 ![Banner](https://github.com/ElioDiNino/Quote/blob/main/static/banner.png)
